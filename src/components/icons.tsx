@@ -92,22 +92,3 @@ export function LockIcon(props: IconProps) {
     </Icon>
   );
 }
-
-export function MenuIcon(props: IconProps) {
-  return (
-    <Icon strokeWidth={2} {...props}>
-      <path d="M4 7h16" />
-      <path d="M4 12h16" />
-      <path d="M4 17h10" />
-    </Icon>
-  );
-}
-
-export function CloseIcon(props: IconProps) {
-  return (
-    <Icon strokeWidth={2} {...props}>
-      <path d="M6 6l12 12" />
-      <path d="M18 6 6 18" />
-    </Icon>
-  );
-}
