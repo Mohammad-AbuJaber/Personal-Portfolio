@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/Button";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-// GitHub Pages can't run a backend, so messages go through Formspree when
-// NEXT_PUBLIC_FORMSPREE_ID is set, and fall back to the visitor's mail app.
-const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+// GitHub Pages can't run a backend, so messages go through Web3Forms when
+// NEXT_PUBLIC_WEB3FORMS_KEY is set, and fall back to the visitor's mail app.
+const web3formsKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
 const fieldStyles =
   "w-full rounded-[10px] border border-line-strong bg-bg px-3.5 text-[15px] text-ink placeholder:text-meta transition-colors focus:border-accent focus:outline-none";
@@ -21,22 +21,28 @@ export function ContactForm() {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const name = String(data.get("name"));
+    const subject = `Portfolio message from ${name}`;
 
-    if (!formspreeId) {
-      const subject = encodeURIComponent(`Portfolio message from ${data.get("name")}`);
-      const body = encodeURIComponent(`${data.get("message")}\n\n— ${data.get("name")} (${data.get("email")})`);
-      window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
+    if (!web3formsKey) {
+      const body = `${data.get("message")}\n\n— ${name} (${data.get("email")})`;
+      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       return;
     }
 
+    data.append("access_key", web3formsKey);
+    data.append("subject", subject);
+    data.append("from_name", "Portfolio contact form");
+
     setStatus("sending");
     try {
-      const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" },
       });
-      if (!response.ok) throw new Error(response.statusText);
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message);
       form.reset();
       setStatus("sent");
     } catch {
@@ -50,6 +56,7 @@ export function ContactForm() {
       className="flex flex-col gap-4.5 rounded-[20px] border border-line bg-surface p-6 sm:p-8"
     >
       <h3 className="font-display text-xl font-semibold sm:text-[22px]">Send me a message</h3>
+      <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name">

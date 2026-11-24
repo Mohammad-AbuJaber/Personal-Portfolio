@@ -43,6 +43,9 @@ The workflow sets the base path automatically, so the site works both at `userna
 
 ### Contact form
 
-GitHub Pages only serves static files, so the form sends messages through [Formspree](https://formspree.io).
-Create a form there, then add its ID as a repository variable named `FORMSPREE_ID`
+GitHub Pages only serves static files, so the form sends messages through [Web3Forms](https://web3forms.com)
+(free, 250 messages a month). Get an access key there, then add it as a repository variable named `WEB3FORMS_KEY`
 (**Settings → Secrets and variables → Actions → Variables**). Without it, the form opens the visitor's email app instead.
+
+The key is meant to be public: it can only deliver messages to the inbox it was created for.
+To test the form locally, put `NEXT_PUBLIC_WEB3FORMS_KEY=your-key` in a `.env.local` file.
